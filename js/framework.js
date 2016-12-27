@@ -16,14 +16,14 @@ org.tomasino.clm = {
 };
 
 org.tomasino.clm.initialize = function () {
-	if (DEBUG) console.log ("org.tomasino.clm VERSION:", org.tomasino.clm.VERSION);
+	if (org.tomasino.clm.DEBUG) console.log ("org.tomasino.clm VERSION:", org.tomasino.clm.VERSION);
 };
 
 org.tomasino.clm.createPage = function ( dataURL ) {
 	dataURL = dataURL || 'asset.json';
 	$.getJSON( dataURL, function( data ) {
 		org.tomasino.clm.pageData = data;
-		if (DEBUG) console.log (data);
+		if (org.tomasino.clm.DEBUG) console.log (data);
 	});
 };
 
