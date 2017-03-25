@@ -158,7 +158,7 @@ org.tomasino.clm = {
 			var i = s.slides.length; while (i--) {
 				if (s.slides[i].id === id) {
 					if (deepLink) org.tomasino.clm.navPrepare(deepLink);
-					org.tomasino.clm.log ("Navigate to", s.slides[i].id);
+					org.tomasino.clm.log ("Navigate to", s.slides[i].id, '('+s.slides[i].keyMessage+')');
 					com.veeva.clm.gotoSlide(s.slides[i].keyMessage);
 					break;
 				}
