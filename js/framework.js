@@ -17,8 +17,8 @@ org.tomasino.clm = {
 
 	/* Package log method
 	 */
-	log : function ( ...messages ) {
-		if (org.tomasino.clm.DEBUG) console.log ( "[org.tomasino.clm]", messages.join(" ") );
+	log : function () {
+		if (org.tomasino.clm.DEBUG) console.log ( "[org.tomasino.clm]", Array.prototype.join.call(arguments, " ") );
 	},
 
 	/* Configure startup values
