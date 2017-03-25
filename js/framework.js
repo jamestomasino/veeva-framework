@@ -30,6 +30,12 @@ org.tomasino.clm = {
 		}
 	},
 
+	/* Set current slide's ID. Used by navigational methods to know our origin
+	 */
+	setCurrentSlideID : function ( id ) {
+		org.tomasino.clm._currentSlide = id;
+	},
+
 	/* Navigation structural definition
 	 *
 	 * Expects a data object with an array named "slides" referencing all
