@@ -87,7 +87,7 @@ org.tomasino.clm = {
 						presentationID = s.presentationID;
 						if (c) {
 							var i = s.slides.length; while (i--) {
-								if (s.slides[i].id === id) {
+								if (s.slides[i].id === c) {
 									keyMessage = s.slides[i].keyMessage;
 									window.localStorage.removeItem('veevahistory');
 									window.localStorage.setItem('veevahistory', { "keyMessage": keyMessage, "presentationID": presentationID} );
