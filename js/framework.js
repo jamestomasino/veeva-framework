@@ -28,7 +28,12 @@ org.tomasino.clm = {
 		if(window.localStorage.getItem('veevanav')) {
 			org.tomasino.clm.log ("Detected deep link information");
 			// TODO: Dispatch event with deep link info
+			window.localStorage.removeItem('veevanav');
 		}
+
+		// Prevent images from dragging. Fixes swipe issues.
+		$(document).bind("dragstart", function() { return false; });
+		document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
 	},
 
 	/* Set current slide's ID. Used by navigational methods to know our origin
