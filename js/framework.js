@@ -15,7 +15,7 @@ org.tomasino.clm = {
 	_presentationStructure: null,
 	_currentSlide: null,
 	_events = {},
-	_hOP = org.tomasino.clm._events.hasOwnProperty;
+	_hOP = _events.hasOwnProperty;
 
 	/* Package log method
 	 */
