@@ -15,7 +15,6 @@ org.tomasino.clm = {
 	_presentationStructure: null,
 	_currentSlide: null,
 	_events: {},
-	_hOP: org.tomasino.clm._events.hasOwnProperty,
 
 	/* Package log method
 	 */
@@ -198,7 +197,7 @@ org.tomasino.clm = {
 	/* Pub/Sub
 	 */
 	sub : function(eventName, listener) {
-		if(!hOP.call(org.tomasino.clm._events, eventName))
+		if(!org.tomasino.clm._events.hasOwnProperty.call(org.tomasino.clm._events, eventName))
 			org.tomasino.clm._events[eventName] = [];
 
 		var index = org.tomasino.clm._events[eventName].push(listener) -1;
@@ -212,7 +211,7 @@ org.tomasino.clm = {
 	},
 
 	pub : function(eventName, info) {
-		if(!hOP.call(org.tomasino.clm._events, eventName)) return;
+		if(!org.tomasino.clm._events.hasOwnProperty.call(org.tomasino.clm._events, eventName)) return;
 
 		org.tomasino.clm._events[eventName].forEach(function(item) {
 			item(info != undefined ? info : {});
