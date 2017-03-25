@@ -14,8 +14,8 @@ org.tomasino.clm = {
 	DEBUG: true,
 	_presentationStructure: null,
 	_currentSlide: null,
-	_events = {},
-	_hOP = _events.hasOwnProperty,
+	_events: {},
+	_hOP: _events.hasOwnProperty,
 
 	/* Package log method
 	 */
