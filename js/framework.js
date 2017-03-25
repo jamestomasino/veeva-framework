@@ -14,6 +14,8 @@ org.tomasino.clm = {
 	DEBUG: true,
 	_presentationStructure: null,
 	_currentSlide: null,
+	_events = {},
+	_hOP = org.tomasino.clm._events.hasOwnProperty;
 
 	/* Package log method
 	 */
@@ -25,15 +27,21 @@ org.tomasino.clm = {
 	 */
 	initialize : function () {
 		org.tomasino.clm.log ( "VERSION:", org.tomasino.clm.VERSION );
-		if(window.localStorage.getItem('veevanav')) {
-			org.tomasino.clm.log ("Detected deep link information");
-			// TODO: Dispatch event with deep link info
-			window.localStorage.removeItem('veevanav');
-		}
-
 		// Prevent images from dragging. Fixes swipe issues.
 		$(document).bind("dragstart", function() { return false; });
 		document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+	},
+
+	/* Start data processing, routing, etc
+	 */
+	start : function () {
+		/* Check for deep links
+		 */
+		if(window.localStorage.getItem('veevanav')) {
+			org.tomasino.clm.log ("Detected deep link information");
+			org.tomasino.clm.pub('deeplink', window.localStorage.getItem('veevanav') );
+			window.localStorage.removeItem('veevanav');
+		}
 	},
 
 	/* Set current slide's ID. Used by navigational methods to know our origin
@@ -185,9 +193,30 @@ org.tomasino.clm = {
 
 	_trackEventCallback : function (data) {
 		org.tomasino.clm.log ("Tracking complete");
+	},
+
+	/* Pub/Sub
+	 */
+	sub : function(eventName, listener) {
+		if(!hOP.call(org.tomasino.clm._events, eventName))
+			org.tomasino.clm._events[eventName] = [];
+
+		var index = org.tomasino.clm._events[eventName].push(listener) -1;
+
+		// Provide handle back for removal of eventName
+		return {
+			remove: function() {
+				delete org.tomasino.clm._events[eventName][index];
+			}
+		};
+	},
+
+	pub : function(eventName, info) {
+		if(!hOP.call(org.tomasino.clm._events, eventName)) return;
+
+		org.tomasino.clm._events[eventName].forEach(function(item) {
+			item(info != undefined ? info : {});
+		});
 	}
 
 };
-
-
-org.tomasino.clm.initialize();
