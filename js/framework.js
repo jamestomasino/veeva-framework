@@ -17,13 +17,13 @@ org.tomasino.clm = {
 
 	/* Package log method
 	 */
-	log = function ( ...messages ) {
+	log : function ( ...messages ) {
 		if (org.tomasino.clm.DEBUG) console.log ( "[org.tomasino.clm]", messages.join(" ") );
 	},
 
 	/* Configure startup values
 	 */
-	initialize = function () {
+	initialize : function () {
 		org.tomasino.clm.log ( "VERSION:", org.tomasino.clm.VERSION );
 		if(window.localStorage.getItem('veevanav')) {
 			// TODO: Dispatch event with deep link info
@@ -35,7 +35,7 @@ org.tomasino.clm = {
 	 * Expects a data object with an array named "slides" referencing all
 	 * slides in the current presentation and their Media_File_Name_vod__c
 	 */
-	navCreate = function ( presentationStructure ) {
+	navCreate : function ( presentationStructure ) {
 		if (! "presentationName" in presentationStructure) {
 			org.tomasino.clm.log ("Presentation structure missing 'presentationName'");
 		} else if (! "presentationID" in presentationStructure) {
@@ -54,7 +54,7 @@ org.tomasino.clm = {
 	 * history prior to navigation. Supports old page/state deep linking
 	 * as version 1. New arbitrary deep linking is version 2.
 	 */
-	navPrepare = function (deepLink) {
+	navPrepare : function (deepLink) {
 		if (! "version" in deepLink) {
 			org.tomasino.clm.log ("DeepLinking version required");
 		} else {
@@ -87,7 +87,7 @@ org.tomasino.clm = {
 		}
 	},
 
-	navNext = function (deepLink) {
+	navNext : function (deepLink) {
 		var s = org.tomasino.clm._presentationStructure;
 		var c = org.tomasino.clm._currentSlide;
 		if (s) {
@@ -108,7 +108,7 @@ org.tomasino.clm = {
 		}
 	},
 
-	navPrev = function (deepLink) {
+	navPrev : function (deepLink) {
 		var s = org.tomasino.clm._presentationStructure;
 		var c = org.tomasino.clm._currentSlide;
 		if (s) {
@@ -129,7 +129,7 @@ org.tomasino.clm = {
 		}
 	},
 
-	navToID = function (id, deepLink) {
+	navToID : function (id, deepLink) {
 		var s = org.tomasino.clm._presentationStructure;
 		if (s) {
 			var i = s.slides.length; while (i--) {
@@ -144,7 +144,7 @@ org.tomasino.clm = {
 		}
 	},
 
-	trackEvent = function ( id, type, desc ) {
+	trackEvent : function ( id, type, desc ) {
 		var trackingObj = {
 			'Track_Element_Id_vod__c': id,
 			'Track_Element_Type_vod__c': type,
@@ -153,7 +153,7 @@ org.tomasino.clm = {
 		com.veeva.clm.generateSaveRecordRequest ('Call_Clickstream_vod__c', trackingObj, 'org.tomasino.clm._trackEventCallback');
 	},
 
-	_trackEventCallback = function (data) {
+	_trackEventCallback : function (data) {
 		org.tomasino.clm.log ("Tracking complete");
 	}
 
