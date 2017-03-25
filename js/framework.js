@@ -26,6 +26,7 @@ org.tomasino.clm = {
 	initialize : function () {
 		org.tomasino.clm.log ( "VERSION:", org.tomasino.clm.VERSION );
 		if(window.localStorage.getItem('veevanav')) {
+			org.tomasino.clm.log ("Detected deep link information");
 			// TODO: Dispatch event with deep link info
 		}
 	},
@@ -70,10 +71,12 @@ org.tomasino.clm = {
 		} else {
 			switch (deepLink.version) {
 				case 1:
+					org.tomasino.clm.log ("Prepared deep link information (version 1)");
 					window.localStorage.removeItem('veevanav');
 					window.localStorage.setItem('veevanav', { "page": deepLink.page, "state": deepLink.state } );
 					break;
 				case 2:
+					org.tomasino.clm.log ("Prepared deep link information (version 2)");
 					window.localStorage.removeItem('veevanav');
 					window.localStorage.setItem('veevanav', deepLink);
 					var s = org.tomasino.clm._presentationStructure;
@@ -97,6 +100,10 @@ org.tomasino.clm = {
 		}
 	},
 
+	/* Navigate to next asset in presentation structure
+	 *
+	 * (Optional) pass deep linking object
+	 */
 	navNext : function (deepLink) {
 		var s = org.tomasino.clm._presentationStructure;
 		var c = org.tomasino.clm._currentSlide;
@@ -106,6 +113,7 @@ org.tomasino.clm = {
 					if (s.slides[i].id === id) {
 						if (i < (s.slides.length - 1)) { // Only navigate prev is there is a prev
 							if (deepLink) com.veeva.clm.navPrepare(deepLink);
+							org.tomasino.clm.log ("Navigate to", s.slides[i+i].id);
 							com.veeva.clm.gotoSlide(s.slides[i+1].keyMessage);
 						}
 					}
@@ -118,6 +126,10 @@ org.tomasino.clm = {
 		}
 	},
 
+	/* Navigate to previous asset in presentation structure
+	 *
+	 * (Optional) pass deep linking object
+	 */
 	navPrev : function (deepLink) {
 		var s = org.tomasino.clm._presentationStructure;
 		var c = org.tomasino.clm._currentSlide;
@@ -127,6 +139,7 @@ org.tomasino.clm = {
 					if (s.slides[i].id === id) {
 						if (i > 0) { // Only navigate prev is there is a prev
 							if (deepLink) com.veeva.clm.navPrepare(deepLink);
+							org.tomasino.clm.log ("Navigate to", s.slides[i-i].id);
 							com.veeva.clm.gotoSlide(s.slides[i-1].keyMessage);
 						}
 					}
@@ -145,6 +158,7 @@ org.tomasino.clm = {
 			var i = s.slides.length; while (i--) {
 				if (s.slides[i].id === id) {
 					if (deepLink) com.veeva.clm.navPrepare(deepLink);
+					org.tomasino.clm.log ("Navigate to", s.slides[i].id);
 					com.veeva.clm.gotoSlide(s.slides[i].keyMessage);
 					break;
 				}
