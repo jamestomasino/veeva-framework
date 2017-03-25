@@ -113,7 +113,7 @@ org.tomasino.clm = {
 					if (s.slides[i].id === c) {
 						if (i < (s.slides.length - 1)) { // Only navigate prev is there is a prev
 							if (deepLink) org.tomasino.clm.navPrepare(deepLink);
-							org.tomasino.clm.log ("Navigate to", s.slides[i+i].id);
+							org.tomasino.clm.log ("Navigate to", s.slides[i+1].id);
 							com.veeva.clm.gotoSlide(s.slides[i+1].keyMessage);
 						}
 					}
@@ -139,7 +139,7 @@ org.tomasino.clm = {
 					if (s.slides[i].id === c) {
 						if (i > 0) { // Only navigate prev is there is a prev
 							if (deepLink) org.tomasino.clm.navPrepare(deepLink);
-							org.tomasino.clm.log ("Navigate to", s.slides[i-i].id);
+							org.tomasino.clm.log ("Navigate to", s.slides[i-1].id);
 							com.veeva.clm.gotoSlide(s.slides[i-1].keyMessage);
 						}
 					}
