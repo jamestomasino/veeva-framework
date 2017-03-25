@@ -34,6 +34,7 @@ org.tomasino.clm = {
 	 */
 	setCurrentSlideID : function ( id ) {
 		org.tomasino.clm._currentSlide = id;
+		org.tomasino.clm.log ("Current Slide ID:", id);
 	},
 
 	/* Navigation structural definition
@@ -50,7 +51,10 @@ org.tomasino.clm = {
 			org.tomasino.clm.log ("Invalid presentation Slide structure");
 		} else if (! presentationStructure.slides.length > 0) {
 			org.tomasino.clm.log ("Invalid presentation Slide structure");
+		} else {
+			org.tomasino.clm.log ("Presentation structure loaded");
 		}
+
 		org.tomasino.clm._presentationStructure = presentationStructure;
 	},
 
