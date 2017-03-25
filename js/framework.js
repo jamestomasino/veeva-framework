@@ -174,6 +174,7 @@ org.tomasino.clm = {
 			'Track_Element_Type_vod__c': type,
 			'Track_Element_Description_vod__c': desc
 		}
+		org.tomasino.clm.log ("Track:", id, type, desc);
 		com.veeva.clm.generateSaveRecordRequest ('Call_Clickstream_vod__c', trackingObj, 'org.tomasino.clm._trackEventCallback');
 	},
 
