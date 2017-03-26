@@ -33,9 +33,14 @@ org.tomasino.clm = {
     /* Are we in a call?
      */
     inCall : function () {
-        com.veeva.clm.getDataForCurrentObject("Account","ID", function (e) {
-            org.tomasino.clm.publish(org.tomasino.clm.EVENT_CALLSTATUS, e.success);
-        });
+        var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        if (iOS) {
+            com.veeva.clm.getDataForCurrentObject("Account","ID", function (e) {
+                org.tomasino.clm.publish(org.tomasino.clm.EVENT_CALLSTATUS, e.success);
+            });
+        } else {
+            org.tomasino.clm.publish(org.tomasino.clm.EVENT_CALLSTATUS, false);
+        }
     },
 
     /* Start data processing, routing, etc
