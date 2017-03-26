@@ -9,6 +9,9 @@ org.tomasino.clm = {
     _currentSlide: null,
     _events: {},
 
+    EVENT_DEEPLINK: 'event_deeplink',
+    EVENT_CURRENTSLIDEID: 'event_currentslideid',
+
     /* Package log method
     */
     log : function () {
@@ -32,7 +35,7 @@ org.tomasino.clm = {
         */
         if(window.localStorage.getItem('veevanav')) {
             org.tomasino.clm.log ("Detected deep link information");
-            org.tomasino.clm.publish('deeplink', window.localStorage.getItem('veevanav') );
+            org.tomasino.clm.publish(org.tomasino.clm.EVENT_DEEPLINK, window.localStorage.getItem('veevanav') );
             window.localStorage.removeItem('veevanav');
         }
     },
@@ -42,7 +45,7 @@ org.tomasino.clm = {
     setCurrentSlideID : function ( id ) {
         org.tomasino.clm._currentSlide = id;
         org.tomasino.clm.log ("Current Slide ID:", id);
-        org.tomasino.clm.publish('currentSlideID', id);
+        org.tomasino.clm.publish(org.tomasino.clm.EVENT_CURRENTSLIDEID, id);
     },
 
     getCurrentSlideID : function () {
