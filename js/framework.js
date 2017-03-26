@@ -45,6 +45,38 @@ org.tomasino.clm = {
         org.tomasino.clm.publish('currentSlideID', id);
     },
 
+    getCurrentSlideID : function () {
+        return org.tomasino.clm._currentSlide;
+    },
+
+    getCurrentSlideKeyMessage : function () {
+        var s = org.tomasino.clm._presentationStructure;
+        if (s) {
+            var i = s.slides.length; while (i--) {
+                if (s.slides[i].id === id) {
+                    return s.slides[i].keyMessage;
+                    break;
+                }
+            }
+        } else {
+            org.tomasino.clm.log ("Navigation not configured");
+        }
+    },
+
+    getCurrentSlideJobCode : function () {
+        var s = org.tomasino.clm._presentationStructure;
+        if (s) {
+            var i = s.slides.length; while (i--) {
+                if (s.slides[i].id === id) {
+                    return s.slides[i].jobCode;
+                    break;
+                }
+            }
+        } else {
+            org.tomasino.clm.log ("Navigation not configured");
+        }
+    },
+
     /* Navigation structural definition
      *
      * Expects a data object with an array named "slides" referencing all
