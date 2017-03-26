@@ -53,7 +53,7 @@ org.tomasino.clm = {
         var s = org.tomasino.clm._presentationStructure;
         if (s) {
             var i = s.slides.length; while (i--) {
-                if (s.slides[i].id === id) {
+                if (s.slides[i].id === org.tomasino.clm._currentSlide) {
                     return s.slides[i].keyMessage;
                     break;
                 }
@@ -67,7 +67,7 @@ org.tomasino.clm = {
         var s = org.tomasino.clm._presentationStructure;
         if (s) {
             var i = s.slides.length; while (i--) {
-                if (s.slides[i].id === id) {
+                if (s.slides[i].id === org.tomasino.clm._currentSlide) {
                     return s.slides[i].jobCode;
                     break;
                 }
