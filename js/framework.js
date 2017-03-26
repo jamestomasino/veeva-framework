@@ -11,6 +11,7 @@ org.tomasino.clm = {
 
     EVENT_DEEPLINK: 'event_deeplink',
     EVENT_CURRENTSLIDEID: 'event_currentslideid',
+    EVENT_CALLSTATUS: 'event_callstatus',
 
     /* Package log method
     */
@@ -26,6 +27,15 @@ org.tomasino.clm = {
         // Prevent images from dragging. Fixes swipe issues.
         $(document).bind("dragstart", function() { return false; });
         document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+
+    },
+
+    /* Are we in a call?
+     */
+    inCall : function () {
+        com.veeva.clm.getDataForCurrentObject("Account","ID", function (e) {
+            org.tomasino.clm.publish(org.tomasino.clm.EVENT_CALLSTATUS, e.success);
+        });
     },
 
     /* Start data processing, routing, etc
@@ -38,6 +48,9 @@ org.tomasino.clm = {
             org.tomasino.clm.publish(org.tomasino.clm.EVENT_DEEPLINK, window.localStorage.getItem('veevanav') );
             window.localStorage.removeItem('veevanav');
         }
+
+        // Check if we're in a call. Can be called again to recheck.
+        org.tomasino.clm.inCall();
     },
 
     /* Set current slide's ID. Used by navigational methods to know our origin
@@ -222,13 +235,10 @@ org.tomasino.clm = {
             'Track_Element_Type_vod__c': type,
             'Track_Element_Description_vod__c': desc
         }
-        org.tomasino.clm.log ("Track:", id, type, desc);
         com.veeva.clm.generateSaveRecordRequest ('Call_Clickstream_vod__c', trackingObj, 'org.tomasino.clm._trackEventCallback');
     },
 
-    _trackEventCallback : function (data) {
-        org.tomasino.clm.log ("Tracking complete");
-    },
+    _trackEventCallback : function (data) {},
 
     /* Subscribe to an event.
      *
