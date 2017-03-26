@@ -42,6 +42,7 @@ org.tomasino.clm = {
     setCurrentSlideID : function ( id ) {
         org.tomasino.clm._currentSlide = id;
         org.tomasino.clm.log ("Current Slide ID:", id);
+        org.tomasino.clm.publish('currentSlideID', id);
     },
 
     /* Navigation structural definition
