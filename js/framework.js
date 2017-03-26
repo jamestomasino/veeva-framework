@@ -46,6 +46,7 @@ org.tomasino.clm = {
     /* Start data processing, routing, etc
     */
     start : function () {
+        org.tomasino.clm.log ('Start');
         /* Check for deep links
         */
         if(window.localStorage.getItem('veevanav')) {
