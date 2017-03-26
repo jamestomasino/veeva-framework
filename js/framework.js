@@ -33,20 +33,14 @@ org.tomasino.clm = {
     /* Are we in a call?
      */
     inCall : function () {
-        var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-        if (iOS) {
-            com.veeva.clm.getDataForCurrentObject("Account","ID", function (e) {
-                org.tomasino.clm.publish(org.tomasino.clm.EVENT_CALLSTATUS, e.success);
-            });
-        } else {
-            org.tomasino.clm.publish(org.tomasino.clm.EVENT_CALLSTATUS, false);
-        }
+        com.veeva.clm.getDataForCurrentObject("Account","ID", function (e) {
+            org.tomasino.clm.publish(org.tomasino.clm.EVENT_CALLSTATUS, e.success);
+        });
     },
 
     /* Start data processing, routing, etc
     */
     start : function () {
-        org.tomasino.clm.log ('Start');
         /* Check for deep links
         */
         if(window.localStorage.getItem('veevanav')) {
