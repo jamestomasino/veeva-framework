@@ -58,8 +58,6 @@ org.tomasino.clm = {
             org.tomasino.clm.log ("Invalid presentation Slide structure");
         } else if (! presentationStructure.slides.length > 0) {
             org.tomasino.clm.log ("Invalid presentation Slide structure");
-        } else {
-            org.tomasino.clm.log ("Presentation structure loaded");
         }
 
         org.tomasino.clm._presentationStructure = presentationStructure;
