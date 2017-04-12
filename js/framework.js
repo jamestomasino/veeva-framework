@@ -1,5 +1,5 @@
 var org;
-if (org == null) org = {};
+if (org == undefined) org = {};
 if (org.tomasino == undefined) org.tomasino = {};
 
 org.tomasino.clm = {
