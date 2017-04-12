@@ -1,8 +1,24 @@
-var org;
-if (org == undefined) org = {};
-if (org.tomasino == undefined) org.tomasino = {};
+__NSO = {
+    extend : function(o) {
+        for (var i in o) {
+            if (o.hasOwnProperty(i)) this[i] = o[i];
+        }
+    }
+}
 
-org.tomasino.clm = {
+function ns (ns) {
+    var n = ns.split('.'),
+        p = window,
+        c;
+    for(var i=0; i < n.length; i++) {
+        c=n[i];
+        p[c]=p[c] || Object.create(__NSO);
+        p=p[c];
+    }
+    return p;
+}
+
+ns('org.tomasino.clm').extend({
     VERSION: "0.0.1",
     DEBUG: true,
     _presentationStructure: null,
@@ -270,6 +286,6 @@ org.tomasino.clm = {
         });
     }
 
-};
+});
 
 /* vi: set shiftwidth=4 tabstop=4 expandtab: */
