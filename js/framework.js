@@ -1,24 +1,22 @@
-__NSO = {
-    extend : function(o) {
-        for (var i in o) {
-            if (o.hasOwnProperty(i)) this[i] = o[i];
-        }
-    }
-}
-
-function ns (ns) {
+window.ns = window.ns || function (ns) {
     var n = ns.split('.'),
         p = window,
         c;
     for(var i=0; i < n.length; i++) {
         c=n[i];
-        p[c]=p[c] || Object.create(__NSO);
+        p[c]=p[c] || {
+            modify: function(o) {
+                for (var i in o) {
+                    if (o.hasOwnProperty(i)) this[i] = o[i];
+                }
+            }
+        };
         p=p[c];
     }
     return p;
 }
 
-ns('org.tomasino.clm').extend({
+ns('org.tomasino.clm').modify({
     VERSION: "0.0.1",
     DEBUG: true,
     _presentationStructure: null,
