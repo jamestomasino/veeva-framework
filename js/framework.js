@@ -249,7 +249,7 @@ ns('org.tomasino.clm').modify({
             'Track_Element_Type_vod__c': type,
             'Track_Element_Description_vod__c': desc
         }
-        com.veeva.clm.createRecord('Call_Clickstream_vod__c', trackingObj, 'org.tomasino.clm._trackEventCallback');
+        com.veeva.clm.createRecord('Call_Clickstream_vod__c', trackingObj, org.tomasino.clm._trackEventCallback);
     },
 
     _trackEventCallback : function (data) {
