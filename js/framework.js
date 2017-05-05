@@ -59,7 +59,7 @@ ns('org.tomasino.clm').modify({
         */
         if(window.localStorage.getItem('veevanav')) {
             org.tomasino.clm.log ("Detected deep link information");
-            org.tomasino.clm.publish(org.tomasino.clm.EVENT_DEEPLINK, window.localStorage.getItem('veevanav') );
+            org.tomasino.clm.publish(org.tomasino.clm.EVENT_DEEPLINK, JSON.parse(window.localStorage.getItem('veevanav')) );
             window.localStorage.removeItem('veevanav');
         }
 
@@ -140,11 +140,12 @@ ns('org.tomasino.clm').modify({
                 case 1:
                     org.tomasino.clm.log ("Prepared deep link information (version 1)");
                     window.localStorage.removeItem('veevanav');
-                    window.localStorage.setItem('veevanav', { "page": deepLink.page, "state": deepLink.state } );
+                    window.localStorage.setItem('veevanav', JSON.stringify({ "page": deepLink.page, "state": deepLink.state }) );
                     break;
                 case 2:
                     org.tomasino.clm.log ("Prepared deep link information (version 2)");
                     window.localStorage.removeItem('veevanav');
+                    if (typeof deeplink !== 'string') deeplink = JSON.stringify(deeplink);
                     window.localStorage.setItem('veevanav', deepLink);
                     var s = org.tomasino.clm._presentationStructure;
                     var c = org.tomasino.clm._currentSlide;
@@ -157,7 +158,7 @@ ns('org.tomasino.clm').modify({
                                 if (s.slides[i].id === c) {
                                     keyMessage = s.slides[i].keyMessage;
                                     window.localStorage.removeItem('veevahistory');
-                                    window.localStorage.setItem('veevahistory', { "keyMessage": keyMessage, "presentationID": presentationID} );
+                                    window.localStorage.setItem('veevahistory', JSON.stringify({ "keyMessage": keyMessage, "presentationID": presentationID}) );
                                 }
                             }
                         }
