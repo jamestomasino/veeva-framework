@@ -57,9 +57,17 @@ ns('org.tomasino.clm').modify({
     start : function () {
         /* Check for deep links
         */
-        if(window.localStorage.getItem('veevanav')) {
+        var value = window.localStorage.getItem('veevanav');
+        if(value) {
             org.tomasino.clm.log ("Detected deep link information");
-            org.tomasino.clm.publish(org.tomasino.clm.EVENT_DEEPLINK, JSON.parse(window.localStorage.getItem('veevanav')) );
+            var deeplinkobj;
+            try {
+                deeplinkobj = JSON.parse(value);
+            } catch (e) {
+                org.tomasino.clm.log ("Deep link format invalid:", value);
+                deeplinkobj = { "version": 2, "error": true, "message": "Invalid JSON object" };
+            }
+            org.tomasino.clm.publish(org.tomasino.clm.EVENT_DEEPLINK, deeplinkobj);
             window.localStorage.removeItem('veevanav');
         }
 
