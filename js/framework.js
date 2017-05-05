@@ -153,7 +153,7 @@ ns('org.tomasino.clm').modify({
                 case 2:
                     org.tomasino.clm.log ("Prepared deep link information (version 2)");
                     window.localStorage.removeItem('veevanav');
-                    if (typeof deeplink !== 'string') deeplink = JSON.stringify(deeplink);
+                    if (typeof deepLink !== 'string') deepLink = JSON.stringify(deepLink);
                     window.localStorage.setItem('veevanav', deepLink);
                     var s = org.tomasino.clm._presentationStructure;
                     var c = org.tomasino.clm._currentSlide;
