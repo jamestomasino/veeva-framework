@@ -17,11 +17,13 @@ window.ns = window.ns || function (ns) {
 }
 
 ns('org.tomasino.clm').modify({
-    VERSION: "0.0.1",
+    VERSION: "0.0.2",
     DEBUG: true,
     _presentationStructure: null,
     _currentSlide: null,
     _events: {},
+    _inCall: false,
+    _accountID: '',
 
     EVENT_DEEPLINK: 'event_deeplink',
     EVENT_CURRENTSLIDEID: 'event_currentslideid',
@@ -47,9 +49,50 @@ ns('org.tomasino.clm').modify({
     /* Are we in a call?
      */
     inCall : function () {
-        com.veeva.clm.getDataForCurrentObject("Account","ID", function (e) {
-            org.tomasino.clm.publish(org.tomasino.clm.EVENT_CALLSTATUS, e.success);
+        com.veeva.clm.getDataForCurrentObject("Account","ID", function (obj) {
+            if (obj.success !== true) {
+                org.tomasino.clm.log ('Account ID Callback Error', obj);
+                return;
+            } else {
+                org.tomasino.clm._inCall = true;
+                org.tomasino.clm._accountID = obj.Account.Id;
+                org.tomasino.clm.publish(org.tomasino.clm.EVENT_CALLSTATUS, e.success);
+            }
         });
+    },
+
+    /* Per-Account Localstorage store
+     */
+    store: function (key, obj) {
+        if (org.tomasino.clm._inCall) {
+            var p = org.tomasino.clm._presentationStructure.presentationName;
+            var a = org.tomasino.clm._accountID;
+            var token = p + '_' + key + '_' + a;
+            return window.localStorage.setItem(token, JSON.stringify(obj));
+        } else {
+            org.tomasino.clm.log ('ERROR - Not in call');
+        }
+    },
+
+    /* Per-Account Localstorage get
+     */
+    get: function (key) {
+        if (org.tomasino.clm._inCall) {
+            var p = org.tomasino.clm._presentationStructure.presentationName;
+            var a = org.tomasino.clm._accountID;
+            var token = p + '_' + key + '_' + a;
+            var value = window.localStorage.getItem(token);
+            var returnObj;
+            try {
+                returnObj = JSON.parse(value);
+            } catch (e) {
+                returnObj = null;
+            }
+            return returnObj;
+        } else {
+            org.tomasino.clm.log ('ERROR - Not in call');
+            return null;
+        }
     },
 
     /* Start data processing, routing, etc
