@@ -56,8 +56,8 @@ ns('org.tomasino.clm').modify({
             } else {
                 org.tomasino.clm._inCall = true;
                 org.tomasino.clm._accountID = obj.Account.Id;
-                org.tomasino.clm.publish(org.tomasino.clm.EVENT_CALLSTATUS, true);
             }
+            org.tomasino.clm.publish(org.tomasino.clm.EVENT_CALLSTATUS, obj.success);
         });
     },
 
