@@ -52,7 +52,6 @@ ns('org.tomasino.clm').modify({
         com.veeva.clm.getDataForCurrentObject("Account","ID", function (obj) {
             if (obj.success !== true) {
                 org.tomasino.clm.log ('Account ID Callback Error', obj);
-                return;
             } else {
                 org.tomasino.clm._inCall = true;
                 org.tomasino.clm._accountID = obj.Account.Id;
