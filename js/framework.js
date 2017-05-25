@@ -64,7 +64,7 @@ ns('org.tomasino.clm').modify({
      */
     store: function (key, obj) {
         if (org.tomasino.clm._inCall) {
-            var p = org.tomasino.clm._presentationStructure.presentationName;
+            var p = org.tomasino.clm._presentationStructure.presentationID;
             var a = org.tomasino.clm._accountID;
             var token = p + '_' + key + '_' + a;
             return window.localStorage.setItem(token, JSON.stringify(obj));
@@ -77,7 +77,7 @@ ns('org.tomasino.clm').modify({
      */
     get: function (key) {
         if (org.tomasino.clm._inCall) {
-            var p = org.tomasino.clm._presentationStructure.presentationName;
+            var p = org.tomasino.clm._presentationStructure.presentationID;
             var a = org.tomasino.clm._accountID;
             var token = p + '_' + key + '_' + a;
             var value = window.localStorage.getItem(token);
