@@ -17,7 +17,7 @@ window.ns = window.ns || function (ns) {
 }
 
 ns('org.tomasino.clm').modify({
-    VERSION: "0.0.2",
+    VERSION: "0.0.3",
     DEBUG: true,
     _presentationStructure: null,
     _currentSlide: null,
@@ -42,7 +42,7 @@ ns('org.tomasino.clm').modify({
 
         // Prevent images from dragging. Fixes swipe issues.
         $(document).bind("dragstart", function() { return false; });
-        document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+        document.body.addEventListener('touchmove', function (e) { e.preventDefault(); }, {passive: false});
 
     },
 
