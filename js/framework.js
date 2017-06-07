@@ -19,13 +19,14 @@ window.ns = window.ns || function (ns) {
 }
 
 window.ns('org.tomasino.clm').modify({
-  VERSION: '0.0.4',
+  VERSION: '0.1.0',
   DEBUG: true,
   _presentationStructure: null,
   _currentSlide: null,
   _events: {},
   _inCall: false,
   _accountID: '',
+  _oneTimeEvents: {},
 
   EVENT_DEEPLINK: 'event_deeplink',
   EVENT_CURRENTSLIDEID: 'event_currentslideid',
@@ -305,6 +306,17 @@ window.ns('org.tomasino.clm').modify({
 
   _trackEventCallback: function (data) {
     org.tomasino.clm.log(JSON.stringify(data))
+  },
+
+  /* Track a one-time event
+   *
+   * id, type, and description required
+   */
+  trackUniqueEvent: function (id, type, desc) {
+    var sig = id + '|||' + type
+    if (org.tomasino.clm._oneTimeEvents[sig] === true) return
+    org.tomasino.clm._oneTimeEvents[sig] = true
+    org.tomasino.clm.trackEvent(id, type, desc)
   },
 
   /* Subscribe to an event.
