@@ -19,7 +19,7 @@ window.ns = window.ns || function (ns) {
 }
 
 window.ns('org.tomasino.clm').modify({
-  VERSION: '0.1.0',
+  VERSION: '0.1.1',
   DEBUG: true,
   _presentationStructure: null,
   _currentSlide: null,
@@ -301,6 +301,7 @@ window.ns('org.tomasino.clm').modify({
       'Track_Element_Type_vod__c': type,
       'Track_Element_Description_vod__c': desc
     }
+    org.tomasino.clm.log('Track:', id, '-', type, '-', desc)
     com.veeva.clm.createRecord('Call_Clickstream_vod__c', trackingObj, org.tomasino.clm._trackEventCallback)
   },
 
