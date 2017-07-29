@@ -19,7 +19,7 @@ window.ns = window.ns || function (ns) {
 }
 
 window.ns('org.tomasino.clm').modify({
-  VERSION: '0.2.0',
+  VERSION: '0.2.1',
   DEBUG: true,
   _presentationStructure: null,
   _currentSlide: null,
@@ -290,9 +290,13 @@ window.ns('org.tomasino.clm').modify({
     if (s) {
       var i = s.slides.length; while (i--) {
         if (s.slides[i].id === id) {
-          if (deepLink) org.tomasino.clm.navPrepare(deepLink)
-          org.tomasino.clm.log('Navigate to', s.slides[i].id, '(' + s.slides[i].keyMessage + ')')
-          com.veeva.clm.gotoSlide(s.slides[i].keyMessage)
+          if (id === org.tomasino.clm._currentSlide && deepLink) {
+            org.tomasino.clm.publish(org.tomasino.clm.EVENT_DEEPLINK, deepLink)
+          } else {
+            if (deepLink) org.tomasino.clm.navPrepare(deepLink)
+            org.tomasino.clm.log('Navigate to', s.slides[i].id, '(' + s.slides[i].keyMessage + ')')
+            com.veeva.clm.gotoSlide(s.slides[i].keyMessage)
+          }
           break
         }
       }
