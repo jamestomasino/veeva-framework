@@ -40,18 +40,18 @@ window.ns('org.tomasino.clm').modify({
 
   /* Configure startup values
   */
-  initialize: () => {
+  initialize: function () {
     org.tomasino.clm.log('VERSION:', org.tomasino.clm.VERSION)
 
     // Prevent images from dragging. Fixes swipe issues.
-    $(document).bind('dragstart', () => { return false })
-    document.body.addEventListener('touchmove', e => { e.preventDefault() }, {passive: false})
+    $(document).bind('dragstart', function () { return false })
+    document.body.addEventListener('touchmove', function (e) { e.preventDefault() }, {passive: false})
   },
 
   /* Are we in a call?
   */
-  inCall: () => {
-    com.veeva.clm.getDataForCurrentObject('Account', 'ID', obj => {
+  inCall: function () {
+    com.veeva.clm.getDataForCurrentObject('Account', 'ID', function (obj) {
       if (obj.success !== true) {
         org.tomasino.clm.log('Account ID Callback Error', obj)
       } else {
@@ -64,7 +64,7 @@ window.ns('org.tomasino.clm').modify({
 
   /* Per-Account Localstorage store
   */
-  store: (key, obj) => {
+  store: function (key, obj) {
     if (org.tomasino.clm._inCall) {
       var p = org.tomasino.clm._presentationStructure.presentationID
       var a = org.tomasino.clm._accountID
@@ -77,7 +77,7 @@ window.ns('org.tomasino.clm').modify({
 
   /* Per-Account Localstorage get
   */
-  get: key => {
+  get: function (key) {
     if (org.tomasino.clm._inCall) {
       var p = org.tomasino.clm._presentationStructure.presentationID
       var a = org.tomasino.clm._accountID
@@ -98,7 +98,7 @@ window.ns('org.tomasino.clm').modify({
 
   /* Start data processing, routing, etc
   */
-  start: () => {
+  start: function () {
     /* Check for deep links
     */
     var value = window.localStorage.getItem('veevanav')
@@ -121,15 +121,17 @@ window.ns('org.tomasino.clm').modify({
 
   /* Set current slide's ID. Used by navigational methods to know our origin
   */
-  setCurrentSlideID: id => {
+  setCurrentSlideID: function (id) {
     org.tomasino.clm._currentSlide = id
     org.tomasino.clm.log('Current Slide ID:', id)
     org.tomasino.clm.publish(org.tomasino.clm.EVENT_CURRENTSLIDEID, id)
   },
 
-  getCurrentSlideID: () => org.tomasino.clm._currentSlide,
+  getCurrentSlideID: function () {
+    return org.tomasino.clm._currentSlide
+  },
 
-  isID: id => {
+  isID: function (id) {
     var s = org.tomasino.clm._presentationStructure
     if (s) {
       var i = s.slides.length
@@ -141,7 +143,7 @@ window.ns('org.tomasino.clm').modify({
     }
   },
 
-  getCurrentSlideKeyMessage: () => {
+  getCurrentSlideKeyMessage: function () {
     var s = org.tomasino.clm._presentationStructure
     if (s) {
       var i = s.slides.length
@@ -155,7 +157,7 @@ window.ns('org.tomasino.clm').modify({
     }
   },
 
-  getCurrentSlideJobCode: () => {
+  getCurrentSlideJobCode: function () {
     var s = org.tomasino.clm._presentationStructure
     if (s) {
       var i = s.slides.length; while (i--) {
@@ -173,7 +175,7 @@ window.ns('org.tomasino.clm').modify({
    * Expects a data object with an array named 'slides' referencing all
    * slides in the current presentation and their Media_File_Name_vod__c
    */
-  navCreate: presentationStructure => {
+  navCreate: function (presentationStructure) {
     if (!('presentationName' in presentationStructure)) {
       org.tomasino.clm.log('Presentation structure missing "presentationName"')
     } else if (!('presentationID' in presentationStructure)) {
@@ -193,7 +195,7 @@ window.ns('org.tomasino.clm').modify({
    * history prior to navigation. Supports old page/state deep linking
    * as version 1. New arbitrary deep linking is version 2.
    */
-  navPrepare: deepLink => {
+  navPrepare: function (deepLink) {
     if (!('version' in deepLink)) {
       org.tomasino.clm.log('DeepLinking version required')
     } else {
@@ -233,7 +235,7 @@ window.ns('org.tomasino.clm').modify({
    *
    * (Optional) pass deep linking object
    */
-  navNext: deepLink => {
+  navNext: function (deepLink) {
     var s = org.tomasino.clm._presentationStructure
     var c = org.tomasino.clm._currentSlide
     if (s) {
@@ -259,7 +261,7 @@ window.ns('org.tomasino.clm').modify({
    *
    * (Optional) pass deep linking object
    */
-  navPrev: deepLink => {
+  navPrev: function (deepLink) {
     var s = org.tomasino.clm._presentationStructure
     var c = org.tomasino.clm._currentSlide
     if (s) {
@@ -285,7 +287,7 @@ window.ns('org.tomasino.clm').modify({
    *
    * (Optional) pass deep linking object
    */
-  navToID: (id, deepLink) => {
+  navToID: function (id, deepLink) {
     var s = org.tomasino.clm._presentationStructure
     if (s) {
       var i = s.slides.length; while (i--) {
@@ -309,7 +311,7 @@ window.ns('org.tomasino.clm').modify({
    *
    * id, type, and description required
    */
-  trackEvent: (id, type, desc) => {
+  trackEvent: function (id, type, desc) {
     var trackingObj = {
       'Track_Element_Id_vod__c': id,
       'Track_Element_Type_vod__c': type,
@@ -327,7 +329,7 @@ window.ns('org.tomasino.clm').modify({
    *
    * id, type, and description required
    */
-  trackUniqueEvent: (id, type, desc) => {
+  trackUniqueEvent: function (id, type, desc) {
     var sig = id + '|||' + type
     if (org.tomasino.clm._oneTimeEvents[sig] === true) return
     org.tomasino.clm._oneTimeEvents[sig] = true
@@ -338,7 +340,7 @@ window.ns('org.tomasino.clm').modify({
    *
    * Returns an observable object with the 'remove" method for easy cleanup
    */
-  subscribe: (eventName, listener) => {
+  subscribe: function (eventName, listener) {
     if (!org.tomasino.clm._events.hasOwnProperty.call(org.tomasino.clm._events, eventName)) {
       org.tomasino.clm._events[eventName] = []
     }
@@ -347,7 +349,7 @@ window.ns('org.tomasino.clm').modify({
 
     // Provide handle back for removal of eventName
     return {
-      remove: () => {
+      remove: function () {
         delete org.tomasino.clm._events[eventName][index]
       }
     }
@@ -357,10 +359,10 @@ window.ns('org.tomasino.clm').modify({
    *
    * (Optional) pass any object along as payload
    */
-  publish: (eventName, info) => {
+  publish: function (eventName, info) {
     if (!org.tomasino.clm._events.hasOwnProperty.call(org.tomasino.clm._events, eventName)) return
 
-    org.tomasino.clm._events[eventName].forEach(item => {
+    org.tomasino.clm._events[eventName].forEach(function (item) {
       item(info !== undefined ? info : {})
     })
   }
