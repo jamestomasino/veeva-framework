@@ -293,6 +293,7 @@ window.ns('org.tomasino.clm').modify({
       var i = s.slides.length; while (i--) {
         if (s.slides[i].id === id) {
           if (id === org.tomasino.clm._currentSlide && deepLink) {
+            deepLink.frameworkAutoDeeplink = true
             org.tomasino.clm.publish(org.tomasino.clm.EVENT_DEEPLINK, deepLink)
           } else {
             if (deepLink) org.tomasino.clm.navPrepare(deepLink)
