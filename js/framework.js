@@ -34,7 +34,7 @@ window.ns('org.tomasino.clm').modify({
 
   /* Package log method
   */
-  log: () => {
+  log: function () {
     if (org.tomasino.clm.DEBUG) console.log('[org.tomasino.clm]', Array.prototype.join.call(arguments, ' '))
   },
 
