@@ -170,6 +170,10 @@ window.ns('org.tomasino.clm').modify({
     }
   },
 
+  gotoSlide: function (id) {
+    document.body.innerHTML = ""
+    com.veeva.clm.gotoSlide(id)
+  },
   /* Navigation structural definition
    *
    * Expects a data object with an array named 'slides' referencing all
@@ -245,7 +249,7 @@ window.ns('org.tomasino.clm').modify({
             if (i < (s.slides.length - 1)) { // Only navigate prev is there is a prev
               if (deepLink) org.tomasino.clm.navPrepare(deepLink)
               org.tomasino.clm.log('Navigate to', s.slides[i + 1].id)
-              com.veeva.clm.gotoSlide(s.slides[i + 1].keyMessage)
+              org.tomasino.clm.gotoSlide(s.slides[i + 1].keyMessage)
             }
           }
         }
@@ -271,7 +275,7 @@ window.ns('org.tomasino.clm').modify({
             if (i > 0) { // Only navigate prev is there is a prev
               if (deepLink) org.tomasino.clm.navPrepare(deepLink)
               org.tomasino.clm.log('Navigate to', s.slides[i - 1].id)
-              com.veeva.clm.gotoSlide(s.slides[i - 1].keyMessage)
+              org.tomasino.clm.gotoSlide(s.slides[i - 1].keyMessage)
             }
           }
         }
@@ -298,7 +302,7 @@ window.ns('org.tomasino.clm').modify({
           } else {
             if (deepLink) org.tomasino.clm.navPrepare(deepLink)
             org.tomasino.clm.log('Navigate to', s.slides[i].id, '(' + s.slides[i].keyMessage + ')')
-            com.veeva.clm.gotoSlide(s.slides[i].keyMessage)
+            org.tomasino.clm.gotoSlide(s.slides[i].keyMessage)
           }
           break
         }
