@@ -368,7 +368,7 @@ window.ns('org.tomasino.clm').modify({
     if (!org.tomasino.clm._events.hasOwnProperty.call(org.tomasino.clm._events, eventName)) return
 
     org.tomasino.clm._events[eventName].forEach(function (item) {
-      item(info !== undefined ? info : {})
+      if (item && typeof item === "function" ) item(info !== undefined ? info : {})
     })
   }
 })
