@@ -19,12 +19,13 @@ window.ns = window.ns || function (ns) {
 }
 
 window.ns('org.tomasino.clm').modify({
-  VERSION: '0.2.1',
+  VERSION: '0.2.2',
   DEBUG: true,
   _presentationStructure: null,
   _currentSlide: null,
   _events: {},
   _inCall: false,
+  _inCallRetries: 10,
   _accountID: '',
   _oneTimeEvents: {},
 
@@ -54,11 +55,16 @@ window.ns('org.tomasino.clm').modify({
     com.veeva.clm.getDataForCurrentObject('Account', 'ID', function (obj) {
       if (obj.success !== true) {
         org.tomasino.clm.log('Account ID Callback Error', obj)
+        org.tomasino.clm._inCallRetries --
+        org.tomasino.clm.publish(org.tomasino.clm.EVENT_CALLSTATUS, false)
+        if (org.tomasino.clm._inCallRetries >= 0) {
+          setTimeout( org.tomasino.clm.inCall, 1000 )
+        }
       } else {
         org.tomasino.clm._inCall = true
         org.tomasino.clm._accountID = obj.Account.ID
+        org.tomasino.clm.publish(org.tomasino.clm.EVENT_CALLSTATUS, true)
       }
-      org.tomasino.clm.publish(org.tomasino.clm.EVENT_CALLSTATUS, obj.success)
     })
   },
 
