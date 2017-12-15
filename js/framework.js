@@ -24,6 +24,7 @@ window.ns('org.tomasino.clm').modify({
   _presentationStructure: null,
   _currentSlide: null,
   _events: {},
+  _inVeeva: false,
   _inCall: false,
   _accountID: '',
   _oneTimeEvents: {},
@@ -53,7 +54,19 @@ window.ns('org.tomasino.clm').modify({
   inCall: function () {
     if (org.tomasino.clm._inCall) return true
 
+    // Test if we are not in Veeva at all
+    if (!org.tomasino.clm._inVeeva) {
+      var inVeevaTest = setTimeout(function () {
+        // If we reach the timeout, you're not in Veeva, so not in a Call
+        org.tomasino.clm.publish(org.tomasino.clm.EVENT_CALLSTATUS, false)
+      }, 1000)
+    }
+
     com.veeva.clm.getDataForCurrentObject('Account', 'ID', function (obj) {
+      // We're in Veeva, so stop the test
+      org.tomasino.clm._inVeeva = true
+      clearInterval(inVeevaTest)
+
       if (obj.success === true) {
         org.tomasino.clm._inCall = true
         org.tomasino.clm._accountID = obj.Account.ID
