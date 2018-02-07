@@ -26,7 +26,6 @@ window.ns('org.tomasino.clm').modify({
   _events: {},
   _inVeeva: false,
   _inCall: false,
-  _inCallInit: false,
   _accountID: '',
   _oneTimeEvents: {},
 
@@ -54,12 +53,7 @@ window.ns('org.tomasino.clm').modify({
   */
   inCall: function (force) {
     if (org.tomasino.clm._inCall) return true
-    if (org.tomasino.clm._inCallInit && !force) return false
-
-    // Only manually call inCall once.
-    // After that, let the polling do its job,
-    // unless we pass a TRUE param, then keep polling
-    org.tomasino.clm._inCallInit = true
+    if (!force) return false
 
     // Test if we are not in Veeva at all
     if (!org.tomasino.clm._inVeeva) {
@@ -140,7 +134,7 @@ window.ns('org.tomasino.clm').modify({
     }
 
     // Check if we're in a call. Can be called again to recheck.
-    org.tomasino.clm.inCall()
+    org.tomasino.clm.inCall(true)
   },
 
   /* Set current slide's ID. Used by navigational methods to know our origin
