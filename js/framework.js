@@ -26,6 +26,7 @@ window.ns('org.tomasino.clm').modify({
   _events: {},
   _inVeeva: false,
   _inCall: false,
+  _inCallInit: false,
   _accountID: '',
   _oneTimeEvents: {},
 
@@ -51,8 +52,14 @@ window.ns('org.tomasino.clm').modify({
 
   /* Are we in a call?
   */
-  inCall: function () {
+  inCall: function (force) {
     if (org.tomasino.clm._inCall) return true
+    if (org.tomasino.clm._inCallInit && !force) return false
+
+    // Only manually call inCall once.
+    // After that, let the polling do its job,
+    // unless we pass a TRUE param, then keep polling
+    org.tomasino.clm._inCallInit = true
 
     // Test if we are not in Veeva at all
     if (!org.tomasino.clm._inVeeva) {
@@ -74,7 +81,7 @@ window.ns('org.tomasino.clm').modify({
       } else {
         org.tomasino.clm.publish(org.tomasino.clm.EVENT_CALLSTATUS, false)
         // Retry each second until call established
-        setTimeout( org.tomasino.clm.inCall, 1000 )
+        setTimeout( function () { org.tomasino.clm.inCall(true) }, 1000 )
       }
     })
   },
