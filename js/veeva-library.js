@@ -1,7 +1,7 @@
-// Veeva JavaScript Library version 28.14.40
+// Veeva JavaScript Library version 181.9.0
 // http://veeva.com
 //
-// Copyright © 2016 Veeva Systems, Inc. All rights reserved.
+// Copyright © 2018 Veeva Systems, Inc. All rights reserved.
 //
 // The com.veeva.clm namespace should be utilized when calling the JavaScript functions.
 //          Example: "com.veeva.clm.getDataForCurrentObject("Account","ID", myAccountID);"
@@ -2232,4 +2232,18 @@ com.veeva.clm.initialize = function initializeEngage() {
 
 
 };
+
+
+//support functions to allow Windows Modern to support the OnExit functions
+com_veeva_clm_createRecordsOnExit = function() {
+	return com.veeva.clm.createRecordsOnExit();
+}
+com_veeva_clm_updateRecordsOnExit = function() {
+	return com.veeva.clm.updateRecordsOnExit();
+}
+com_veeva_clm_updateCurrentRecordsOnExit = function() {
+	return com.veeva.clm.updateCurrentRecordsOnExit();
+}
+
+
 com.veeva.clm.initialize();
