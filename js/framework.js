@@ -19,7 +19,7 @@ window.ns = window.ns || function (ns) {
 }
 
 window.ns('org.tomasino.clm').modify({
-  VERSION: '0.2.3',
+  VERSION: '0.2.4',
   DEBUG: true,
   _presentationStructure: null,
   _currentSlide: null,
@@ -46,7 +46,7 @@ window.ns('org.tomasino.clm').modify({
 
     // Prevent images from dragging. Fixes swipe issues.
     $(document).bind('dragstart', function () { return false })
-    document.body.addEventListener('touchmove', function (e) { e.preventDefault() }, {passive: false})
+    document.body.addEventListener('touchmove', function (e) { e.preventDefault() }, { passive: false })
   },
 
   /* Are we in a call?
@@ -75,7 +75,7 @@ window.ns('org.tomasino.clm').modify({
       } else {
         org.tomasino.clm.publish(org.tomasino.clm.EVENT_CALLSTATUS, false)
         // Retry each second until call established
-        setTimeout( function () { org.tomasino.clm.inCall(true) }, 1000 )
+        setTimeout(function () { org.tomasino.clm.inCall(true) }, 1000)
       }
     })
   },
@@ -127,7 +127,7 @@ window.ns('org.tomasino.clm').modify({
         deeplinkobj = JSON.parse(value)
       } catch (e) {
         org.tomasino.clm.log('Deep link format invalid:', value)
-        deeplinkobj = {'version': 2, 'error': true, 'message': 'Invalid JSON object'}
+        deeplinkobj = { 'version': 2, 'error': true, 'message': 'Invalid JSON object' }
       }
       org.tomasino.clm.publish(org.tomasino.clm.EVENT_DEEPLINK, deeplinkobj)
       window.localStorage.removeItem('veevanav')
@@ -189,7 +189,7 @@ window.ns('org.tomasino.clm').modify({
   },
 
   gotoSlide: function (id) {
-    document.body.innerHTML = ""
+    document.body.innerHTML = ''
     com.veeva.clm.gotoSlide(id)
   },
   /* Navigation structural definition
@@ -225,7 +225,7 @@ window.ns('org.tomasino.clm').modify({
         case 1:
           org.tomasino.clm.log('Prepared deep link information (version 1)')
           window.localStorage.removeItem('veevanav')
-          window.localStorage.setItem('veevanav', JSON.stringify({'page': deepLink.page, 'state': deepLink.state}))
+          window.localStorage.setItem('veevanav', JSON.stringify({ 'page': deepLink.page, 'state': deepLink.state }))
           break
         case 2:
           org.tomasino.clm.log('Prepared deep link information (version 2)')
@@ -243,7 +243,7 @@ window.ns('org.tomasino.clm').modify({
                 if (s.slides[i].id === c) {
                   keyMessage = s.slides[i].keyMessage
                   window.localStorage.removeItem('veevahistory')
-                  window.localStorage.setItem('veevahistory', JSON.stringify({'keyMessage': keyMessage, 'presentationID': presentationID}))
+                  window.localStorage.setItem('veevahistory', JSON.stringify({ 'keyMessage': keyMessage, 'presentationID': presentationID }))
                 }
               }
             }
@@ -386,7 +386,7 @@ window.ns('org.tomasino.clm').modify({
     if (!org.tomasino.clm._events.hasOwnProperty.call(org.tomasino.clm._events, eventName)) return
 
     org.tomasino.clm._events[eventName].forEach(function (item) {
-      if (item && typeof item === "function" ) item(info !== undefined ? info : {})
+      if (item && typeof item === 'function') item(info !== undefined ? info : {})
     })
   }
 })
