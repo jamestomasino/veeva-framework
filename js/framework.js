@@ -141,6 +141,7 @@ window.ns('org.tomasino.clm').modify({
   */
   setCurrentSlideID: function (id) {
     org.tomasino.clm._currentSlide = id
+    document.title = id
     org.tomasino.clm.log('Current Slide ID:', id)
     org.tomasino.clm.publish(org.tomasino.clm.EVENT_CURRENTSLIDEID, id)
   },
