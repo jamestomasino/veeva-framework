@@ -190,7 +190,7 @@ window.ns('org.tomasino.clm').modify({
   },
 
   gotoSlide: function (id) {
-    document.body.innerHTML = ''
+    //document.body.innerHTML = ''
     com.veeva.clm.gotoSlide(id)
   },
   /* Navigation structural definition
