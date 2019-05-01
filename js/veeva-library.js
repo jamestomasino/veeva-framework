@@ -1673,7 +1673,7 @@ com.veeva.clm = {
                         }
                     }
                 }
-                
+
             }
         }
 
@@ -1681,7 +1681,7 @@ com.veeva.clm = {
         window["com_veeva_clm_launchApprovedEmail"] = function(result) {
             result = com.veeva.clm.formatResult(result);
             var ret = {};
-            if(result.success) {                
+            if(result.success) {
                 ret.success = true;
                 if(result.code != undefined) {
                     ret.code = result.code;
@@ -2081,9 +2081,11 @@ com.veeva.clm.initialize = function initializeEngage() {
     }
 
     function engageMessage(message) {
-        var data = JSON.parse(message.data);
+        try {
+          var data = JSON.parse(message.data);
+        } catch (e) {}
 
-        if(data.type && data.type === "events") {
+        if(data && data.type && data.type === "events") {
             internalMessage = true;
 
             // Get scrolling offset
@@ -2131,7 +2133,7 @@ com.veeva.clm.initialize = function initializeEngage() {
                     simulateMouseEvent(target, data);
                 }
             }
-        } else if(data.type && data.type === "scale") {
+        } else if(data && data.type && data.type === "scale") {
             if(typeof data.value === "number" && data.value > 0) {
                 frameScale = data.value;
             }
