@@ -1,7 +1,7 @@
-// Veeva JavaScript Library version 181.9.0
+// Veeva JavaScript Library version 212.0.100
 // http://veeva.com
 //
-// Copyright © 2018 Veeva Systems, Inc. All rights reserved.
+// Copyright © 2021 Veeva Systems, Inc. All rights reserved.
 //
 // The com.veeva.clm namespace should be utilized when calling the JavaScript functions.
 //          Example: "com.veeva.clm.getDataForCurrentObject("Account","ID", myAccountID);"
@@ -38,6 +38,7 @@
 //      Encrypted Text Area
 
 
+const FEATURE_MULTI_PRODUCT_MIN_VERSION = "212.0.100";
 var com;
 if(com == null) com = {};
 if(com.veeva == undefined)com.veeva = {};
@@ -692,7 +693,54 @@ com.veeva.clm = {
             return;
         }
 
-        // 2b Check results of Approved Document query against My Setup results
+		// check version
+		this.getAppVersion(function(result) {
+          var isFeatureMultiProductSupported = false;
+		  if (result.success) {
+		    var version = result.Version;
+		    // compare the version
+		    var n = FEATURE_MULTI_PRODUCT_MIN_VERSION.localeCompare(version);
+		    // returns -1 if the min version is before the current version
+		    // returns 0 if the two versions are equal
+		    // returns 1 if the min version is after the current version
+		    if (n < 1) {
+              isFeatureMultiProductSupported = true;
+		      //If the current version is compatible, run the request veeva:getApprovedDocument to get the document
+              //Otherwise, we just run existing js logic to return the document
+		      window["com_veeva_clm_approvedDocument"] = function(result) {
+		        result = com.veeva.clm.formatResult(result);
+		        if (result.success && result.ApprovedDocumentId) {
+		          var ret = {};
+		          ret.Approved_Document_vod__c = {};
+		          ret.Approved_Document_vod__c.ID = result.ApprovedDocumentId;
+		          ret.success = true;
+		          com.veeva.clm.wrapResult("getApprovedDocument", callback, ret);
+		          return;
+		        } else {
+		          var ret = {};
+		          ret.success = false;
+                  if(result.code != undefined){
+                        ret.code = result.code;
+                  }
+                  if(result.message != undefined){
+                        ret.message = result.message;
+                  }
+		          com.veeva.clm.wrapResult("getApprovedDocument", callback, ret);
+		          return;
+                }
+		      }
+
+		      query = "veeva:getApprovedDocument(" + vault_id + "," + document_num + "),com_veeva_clm_approvedDocument(result)";
+		      if (!com.veeva.clm.testMode)
+		        com.veeva.clm.runAPIRequest(query);
+		      else
+		        com_veeva_clm_appVersion(com.veeva.clm.testResult.common);
+		    }
+		  }
+
+          if( isFeatureMultiProductSupported == false) {
+        // existing js logic to return the document
+		// 2b Check results of Approved Document query against My Setup results
         window["com_veeva_clm_DocumentTypeId_getDocument"] = function(result) {
             result = com.veeva.clm.formatResult(result);
 
@@ -902,7 +950,11 @@ com.veeva.clm = {
                 return;
             }
         });
-    },
+
+		  }
+		});
+
+	},
     // Launches the Send Email user interface with the email template and fragments selected.  An Account must be selected.
     // If CLM_Select_Account_Preview_Mode Veeva Setting is enabled, then Select Account dialogue is opened so the user can select an account.
     // If the Veeva Setting is not enabled and no Account is selected, then no action will be performed.
@@ -1638,6 +1690,65 @@ com.veeva.clm = {
         com.veeva.clm.runAPIRequest(request, callback);
     },
 
+    //19,
+    // Returns HTTP Request result
+    //
+    // object - request object with all HTTP parameters
+    request:function(object, callback){
+        ret = this.checkCallbackFunction(callback);
+        if(!ret.success) {
+            return ret;
+        }
+
+        //check request object validity
+        var errorMessage = this.validateRequestObjectWithErrorMessage(object);
+        if (errorMessage !== "Valid") {
+            var error = {
+                success: false,
+                code: 5,
+                message: errorMessage
+            };
+            com.veeva.clm.wrapResult("request", callback, error);
+            return;
+        }
+
+        this.addRequestObjectDefaultsAndFormat(object);
+
+        window["com_veeva_clm_requestReturn"] = function(result) {
+            result = com.veeva.clm.formatResult(result);
+            com.veeva.clm.wrapResult("request", callback, result);
+            return;
+        };
+
+        var request = "veeva:request(" + JSON.stringify(object) + "),com_veeva_clm_requestReturn(result)";
+        com.veeva.clm.runAPIRequest(request, callback);
+    },
+
+	//20,
+	// Returns the version of the current offline application
+    getAppVersion: function(callback) {
+        ret = this.checkCallbackFunction(callback);
+        if(ret.success == false)
+            return ret;
+
+        window.com_veeva_clm_appVersion = function(result) {
+			clearTimeout(timer);
+            com.veeva.clm.wrapResult("getAppVersion", callback, result);
+        }
+
+		var timer = setTimeout(function() {
+				result = { success: false };
+				com.veeva.clm.wrapResult("getAppVersion", callback, result);
+		}, 1500);
+
+        query = "veeva:getAppVersion(),com_veeva_clm_appVersion(result)";
+        if(!com.veeva.clm.testMode) {
+            com.veeva.clm.runAPIRequest(query);
+        } else {
+            com_veeva_clm_appVersion(com.veeva.clm.testResult.common);
+        }
+    },
+
     /////////////////////// CLM Specific ///////////////////////
     //1,
     // Shows slide selector with specified presentation:key messages; callback gets notified if there aren't any valid key messages
@@ -1809,6 +1920,98 @@ com.veeva.clm = {
         return ret;
     },
 
+    validateRequestObjectWithErrorMessage: function(request) {
+        var errorString = "";
+
+        //validate that an object is passed in
+        if (typeof request !== "object") {
+            errorString = "Invalid request.  Must be an object.";
+        }
+        //validate url
+        //url must be a string
+        //value is required
+        else if (typeof request.url !== "string" || request.url.length <= 0) {
+            errorString = "Invalid URL value. Must be a non-empty String";
+        }
+        //validate method
+        //method must be one of the valid HTTP verbs
+        //optional
+        else if (request.method && !this.validateMethod(request.method)) {
+            errorString = "Invalid method value. Must be a valid HTTP method.";
+        }
+        //validate headers
+        //must be an object whose values are all strings
+        //optional
+        else if (request.headers && !this.validateHeaders(request.headers)) {
+            errorString = "Invalid headers value. Must be an object with values of type String";
+        }
+        //validate timeout
+        //must be a number
+        //optional
+        else if (request.timeout && (typeof request.timeout !== "number" || request.timeout <= 0)) {
+            errorString = "Invalid timeout value. Must be a positive number";
+        }
+        //validate expect
+        //must be a "text" or "blob"
+        //optional
+        else if (request.expect && !this.validateExpect(request.expect)) {
+            errorString = "Invalid expect value.  Must be a String of value 'text' or 'blob'";
+        }
+        else {
+            errorString = "Valid";
+        }
+
+        return errorString;
+    },
+
+    methods: ['POST', 'GET', 'HEAD', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH'],
+
+    validateMethod: function(method) {
+        return typeof method === "string" && !!~this.methods.indexOf(method.toUpperCase());
+    },
+
+    validateHeaders: function(headers) {
+        if (typeof headers === "object") {
+            var keys = Object.keys(headers);
+            for (var i = 0; i < keys.length; i++) {
+                var key = keys[i];
+                var headerValue = headers[key];
+                if (typeof headerValue !== "string") {
+                    return false;
+                }
+            }
+        } else {
+            return false;
+        }
+        return true;
+    },
+
+    validateExpect: function(expect) {
+        return typeof expect === "string" && (expect.toLowerCase() === "text" || expect.toLowerCase() === "blob");
+    },
+
+    addRequestObjectDefaultsAndFormat: function(request) {
+        if (!request.method) {
+            request.method = "GET";
+        } else {
+            request.method = request.method.toUpperCase();
+        }
+        if (!request.headers) {
+            request.headers = {};
+        }
+        if (!request.timeout) {
+            request.timeout = 30;
+        }
+        if (!request.body) {
+            request.body = "";
+        }
+        if (!request.expect) {
+            request.expect = "text";
+        } else {
+            request.expect = request.expect.toLowerCase();
+        }
+    },
+
     getCurrentDate: function() {
         var currentDate = new Date();
         dateString = currentDate.getFullYear().toString();
@@ -1853,14 +2056,24 @@ com.veeva.clm = {
             com.veeva.clm.engageAPIRequest(request, callback);
         } else if(com.veeva.clm.isWin8()) {
             window.external.notify(request);
-        }
-        else {
-            //Remove the veeva: prefix, encode the remaining request, and add veeva: back.
-            //This works with a basic replace because we only run ONE request here.
+        } else if(com.veeva.clm.isVeevaMessagingEnabled()) {
+            window.webkit.messageHandlers.veeva.postMessage({"message": request});
+        } else {
+            // existing code in this block could be deleted, but to play safe, we keep
+	    // as is just in case some legacy applications still need them.
+            // we will eventually remove this code block.
             request = request.replace(/^veeva:/, '');
             request = encodeURIComponent(request);
             request = "veeva:" + request;
             document.location = request;
+        }
+    },
+
+    isVeevaMessagingEnabled: function() {
+        try {
+           return Boolean(window.webkit.messageHandlers.veeva);
+        } catch (_e) {
+           return false
         }
     },
 
@@ -2081,11 +2294,9 @@ com.veeva.clm.initialize = function initializeEngage() {
     }
 
     function engageMessage(message) {
-        try {
-          var data = JSON.parse(message.data);
-        } catch (e) {}
+        var data = JSON.parse(message.data);
 
-        if(data && data.type && data.type === "events") {
+        if(data.type && data.type === "events") {
             internalMessage = true;
 
             // Get scrolling offset
@@ -2133,7 +2344,7 @@ com.veeva.clm.initialize = function initializeEngage() {
                     simulateMouseEvent(target, data);
                 }
             }
-        } else if(data && data.type && data.type === "scale") {
+        } else if(data.type && data.type === "scale") {
             if(typeof data.value === "number" && data.value > 0) {
                 frameScale = data.value;
             }

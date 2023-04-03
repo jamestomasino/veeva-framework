@@ -20,7 +20,7 @@ window.ns = window.ns || function (ns) {
 
 window.ns('org.tomasino.clm').modify({
   VERSION: '0.2.4',
-  DEBUG: false,
+  DEBUG: true,
   _presentationStructure: null,
   _currentSlide: null,
   _events: {},
@@ -45,7 +45,7 @@ window.ns('org.tomasino.clm').modify({
     org.tomasino.clm.log('VERSION:', org.tomasino.clm.VERSION)
 
     // Prevent images from dragging. Fixes swipe issues.
-    document.body.addEventListener('touchmove', function (e) { e.preventDefault() }, { passive: false })
+    // document.body.addEventListener('touchmove', function (e) { e.preventDefault() }, { passive: false })
   },
 
   /* Are we in a call?
@@ -56,29 +56,27 @@ window.ns('org.tomasino.clm').modify({
 
     // Test if we are not in Veeva at all
     if (!org.tomasino.clm._inVeeva) {
-      const inVeevaTest = setTimeout(function () {
+      var inVeevaTest = setTimeout(function () {
         // If we reach the timeout, you're not in Veeva, so not in a Call
         org.tomasino.clm.publish(org.tomasino.clm.EVENT_CALLSTATUS, false)
       }, 1000)
     }
 
-    if (!org.tomasino.clm.DEBUG) {
-      com.veeva.clm.getDataForCurrentObject('Account', 'ID', function (obj) {
-        // We're in Veeva, so stop the test
-        org.tomasino.clm._inVeeva = true
-        clearInterval(inVeevaTest)
+    com.veeva.clm.getDataForCurrentObject('Account', 'ID', function (obj) {
+      // We're in Veeva, so stop the test
+      org.tomasino.clm._inVeeva = true
+      clearInterval(inVeevaTest)
 
-        if (obj.success === true) {
-          org.tomasino.clm._inCall = true
-          org.tomasino.clm._accountID = obj.Account.ID
-          org.tomasino.clm.publish(org.tomasino.clm.EVENT_CALLSTATUS, true)
-        } else {
-          org.tomasino.clm.publish(org.tomasino.clm.EVENT_CALLSTATUS, false)
-          // Retry each second until call established
-          setTimeout(function () { org.tomasino.clm.inCall(true) }, 1000)
-        }
-      })
-    }
+      if (obj.success === true) {
+        org.tomasino.clm._inCall = true
+        org.tomasino.clm._accountID = obj.Account.ID
+        org.tomasino.clm.publish(org.tomasino.clm.EVENT_CALLSTATUS, true)
+      } else {
+        org.tomasino.clm.publish(org.tomasino.clm.EVENT_CALLSTATUS, false)
+        // Retry each second until call established
+        setTimeout(function () { org.tomasino.clm.inCall(true) }, 1000)
+      }
+    })
   },
 
   /* Per-Account Localstorage store
@@ -191,9 +189,8 @@ window.ns('org.tomasino.clm').modify({
   },
 
   gotoSlide: function (id) {
-    if (!org.tomasino.clm.DEBUG) {
-      com.veeva.clm.gotoSlide(id)
-    }
+    //document.body.innerHTML = ''
+    com.veeva.clm.gotoSlide(id)
   },
   /* Navigation structural definition
    *
@@ -338,15 +335,13 @@ window.ns('org.tomasino.clm').modify({
    * id, type, and description required
    */
   trackEvent: function (id, type, desc) {
-    const trackingObj = {
+    var trackingObj = {
       'Track_Element_Id_vod__c': id,
       'Track_Element_Type_vod__c': type,
       'Track_Element_Description_vod__c': desc
     }
     org.tomasino.clm.log('Track:', id, '-', type, '-', desc)
-    if (!org.tomasino.clm.DEBUG) {
-      com.veeva.clm.createRecord('Call_Clickstream_vod__c', trackingObj, org.tomasino.clm._trackEventCallback)
-    }
+    com.veeva.clm.createRecord('Call_Clickstream_vod__c', trackingObj, org.tomasino.clm._trackEventCallback)
   },
 
   _trackEventCallback: function (data) {
