@@ -19,7 +19,7 @@ window.ns = window.ns || function (ns) {
 }
 
 window.ns('org.tomasino.clm').modify({
-  VERSION: '0.2.4',
+  VERSION: '0.2.5',
   DEBUG: true,
   _presentationStructure: null,
   _currentSlide: null,
