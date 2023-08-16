@@ -1,21 +1,21 @@
 /* globals org, com */
 'use strict'
 window.ns = window.ns || function (ns) {
-  var n = ns.split('.')
-  var p = window
-  var c
-  for (var i = 0; i < n.length; i++) {
-    c = n[i]
-    p[c] = p[c] || {
+  const namespace = ns.split('.')
+  let parent = window
+  let component
+  for (let i = 0; i < namespace.length; i++) {
+    component = namespace[i]
+    parent[component] = parent[component] || {
       modify: function (o) {
-        for (var i in o) {
-          if (o.hasOwnProperty(i)) this[i] = o[i]
+        for (const a in o) {
+          if (o.hasOwnProperty(a)) this[a] = o[a]
         }
       }
     }
-    p = p[c]
+    parent = parent[component]
   }
-  return p
+  return parent
 }
 
 window.ns('org.tomasino.clm').modify({
@@ -28,6 +28,7 @@ window.ns('org.tomasino.clm').modify({
   _inCall: false,
   _accountID: '',
   _oneTimeEvents: {},
+  _inVeevaTest: null,
 
   EVENT_DEEPLINK: 'event_deeplink',
   EVENT_CURRENTSLIDEID: 'event_currentslideid',
@@ -56,7 +57,7 @@ window.ns('org.tomasino.clm').modify({
 
     // Test if we are not in Veeva at all
     if (!org.tomasino.clm._inVeeva) {
-      var inVeevaTest = setTimeout(function () {
+      org.tomasino.clm._inVeevaTest = setTimeout(function () {
         // If we reach the timeout, you're not in Veeva, so not in a Call
         org.tomasino.clm.publish(org.tomasino.clm.EVENT_CALLSTATUS, false)
       }, 1000)
@@ -65,16 +66,17 @@ window.ns('org.tomasino.clm').modify({
     com.veeva.clm.getDataForCurrentObject('Account', 'ID', function (obj) {
       // We're in Veeva, so stop the test
       org.tomasino.clm._inVeeva = true
-      clearInterval(inVeevaTest)
+      clearInterval(org.tomasino.clm._inVeevaTest)
 
       if (obj.success === true) {
         org.tomasino.clm._inCall = true
         org.tomasino.clm._accountID = obj.Account.ID
         org.tomasino.clm.publish(org.tomasino.clm.EVENT_CALLSTATUS, true)
       } else {
+        console.log('1')
         org.tomasino.clm.publish(org.tomasino.clm.EVENT_CALLSTATUS, false)
         // Retry each second until call established
-        setTimeout(function () { org.tomasino.clm.inCall(true) }, 1000)
+        setTimeout(function () { org.tomasino.clm.inCall(true) }, 2000)
       }
     })
   },
@@ -83,9 +85,9 @@ window.ns('org.tomasino.clm').modify({
   */
   store: function (key, obj) {
     if (org.tomasino.clm._inCall) {
-      var p = org.tomasino.clm._presentationStructure.presentationID
-      var a = org.tomasino.clm._accountID
-      var token = p + '_' + key + '_' + a
+      const p = org.tomasino.clm._presentationStructure.presentationID
+      const a = org.tomasino.clm._accountID
+      const token = p + '_' + key + '_' + a
       return window.localStorage.setItem(token, JSON.stringify(obj))
     } else {
       org.tomasino.clm.log('ERROR - Not in call')
@@ -96,14 +98,14 @@ window.ns('org.tomasino.clm').modify({
   */
   get: function (key) {
     if (org.tomasino.clm._inCall) {
-      var p = org.tomasino.clm._presentationStructure.presentationID
-      var a = org.tomasino.clm._accountID
-      var token = p + '_' + key + '_' + a
-      var value = window.localStorage.getItem(token)
-      var returnObj
+      const p = org.tomasino.clm._presentationStructure.presentationID
+      const a = org.tomasino.clm._accountID
+      const token = p + '_' + key + '_' + a
+      const value = window.localStorage.getItem(token)
+      let returnObj
       try {
         returnObj = JSON.parse(value)
-      } catch (e) {
+      } catch (_e) {
         returnObj = null
       }
       return returnObj
@@ -118,13 +120,13 @@ window.ns('org.tomasino.clm').modify({
   start: function () {
     /* Check for deep links
     */
-    var value = window.localStorage.getItem('veevanav')
+    const value = window.localStorage.getItem('veevanav')
     if (value) {
       org.tomasino.clm.log('Detected deep link information')
-      var deeplinkobj
+      let deeplinkobj
       try {
         deeplinkobj = JSON.parse(value)
-      } catch (e) {
+      } catch (_e) {
         org.tomasino.clm.log('Deep link format invalid:', value)
         deeplinkobj = { 'version': 2, 'error': true, 'message': 'Invalid JSON object' }
       }
@@ -150,9 +152,9 @@ window.ns('org.tomasino.clm').modify({
   },
 
   isID: function (id) {
-    var s = org.tomasino.clm._presentationStructure
+    const s = org.tomasino.clm._presentationStructure
     if (s) {
-      var i = s.slides.length
+      let i = s.slides.length
       while (i--) {
         if (s.slides[i].id === id) {
           return true
@@ -162,9 +164,9 @@ window.ns('org.tomasino.clm').modify({
   },
 
   getCurrentSlideKeyMessage: function () {
-    var s = org.tomasino.clm._presentationStructure
+    const s = org.tomasino.clm._presentationStructure
     if (s) {
-      var i = s.slides.length
+      let i = s.slides.length
       while (i--) {
         if (s.slides[i].id === org.tomasino.clm._currentSlide) {
           return s.slides[i].keyMessage
@@ -176,9 +178,9 @@ window.ns('org.tomasino.clm').modify({
   },
 
   getCurrentSlideJobCode: function () {
-    var s = org.tomasino.clm._presentationStructure
+    const s = org.tomasino.clm._presentationStructure
     if (s) {
-      var i = s.slides.length; while (i--) {
+      let i = s.slides.length; while (i--) {
         if (s.slides[i].id === org.tomasino.clm._currentSlide) {
           return s.slides[i].jobCode
         }
@@ -218,6 +220,10 @@ window.ns('org.tomasino.clm').modify({
    * as version 1. New arbitrary deep linking is version 2.
    */
   navPrepare: function (deepLink) {
+    let s
+    let c
+    let keyMessage
+    let presentationID
     if (!('version' in deepLink)) {
       org.tomasino.clm.log('DeepLinking version required')
     } else {
@@ -232,14 +238,14 @@ window.ns('org.tomasino.clm').modify({
           window.localStorage.removeItem('veevanav')
           if (typeof deepLink !== 'string') deepLink = JSON.stringify(deepLink)
           window.localStorage.setItem('veevanav', deepLink)
-          var s = org.tomasino.clm._presentationStructure
-          var c = org.tomasino.clm._currentSlide
-          var keyMessage = null
-          var presentationID = null
+          s = org.tomasino.clm._presentationStructure
+          c = org.tomasino.clm._currentSlide
+          keyMessage = null
+          presentationID = null
           if (s) {
             presentationID = s.presentationID
             if (c) {
-              var i = s.slides.length; while (i--) {
+              let i = s.slides.length; while (i--) {
                 if (s.slides[i].id === c) {
                   keyMessage = s.slides[i].keyMessage
                   window.localStorage.removeItem('veevahistory')
@@ -258,11 +264,11 @@ window.ns('org.tomasino.clm').modify({
    * (Optional) pass deep linking object
    */
   navNext: function (deepLink) {
-    var s = org.tomasino.clm._presentationStructure
-    var c = org.tomasino.clm._currentSlide
+    const s = org.tomasino.clm._presentationStructure
+    const c = org.tomasino.clm._currentSlide
     if (s) {
       if (c) {
-        var i = s.slides.length; while (i--) {
+        let i = s.slides.length; while (i--) {
           if (s.slides[i].id === c) {
             if (i < (s.slides.length - 1)) { // Only navigate prev is there is a prev
               if (deepLink) org.tomasino.clm.navPrepare(deepLink)
@@ -284,11 +290,11 @@ window.ns('org.tomasino.clm').modify({
    * (Optional) pass deep linking object
    */
   navPrev: function (deepLink) {
-    var s = org.tomasino.clm._presentationStructure
-    var c = org.tomasino.clm._currentSlide
+    const s = org.tomasino.clm._presentationStructure
+    const c = org.tomasino.clm._currentSlide
     if (s) {
       if (c) {
-        var i = s.slides.length; while (i--) {
+        let i = s.slides.length; while (i--) {
           if (s.slides[i].id === c) {
             if (i > 0) { // Only navigate prev is there is a prev
               if (deepLink) org.tomasino.clm.navPrepare(deepLink)
@@ -310,9 +316,9 @@ window.ns('org.tomasino.clm').modify({
    * (Optional) pass deep linking object
    */
   navToID: function (id, deepLink) {
-    var s = org.tomasino.clm._presentationStructure
+    const s = org.tomasino.clm._presentationStructure
     if (s) {
-      var i = s.slides.length; while (i--) {
+      let i = s.slides.length; while (i--) {
         if (s.slides[i].id === id) {
           if (id === org.tomasino.clm._currentSlide && deepLink) {
             deepLink.frameworkAutoDeeplink = true
@@ -335,7 +341,7 @@ window.ns('org.tomasino.clm').modify({
    * id, type, and description required
    */
   trackEvent: function (id, type, desc) {
-    var trackingObj = {
+    const trackingObj = {
       'Track_Element_Id_vod__c': id,
       'Track_Element_Type_vod__c': type,
       'Track_Element_Description_vod__c': desc
@@ -353,7 +359,7 @@ window.ns('org.tomasino.clm').modify({
    * id, type, and description required
    */
   trackUniqueEvent: function (id, type, desc) {
-    var sig = id + '|||' + type
+    const sig = id + '|||' + type
     if (org.tomasino.clm._oneTimeEvents[sig] === true) return
     org.tomasino.clm._oneTimeEvents[sig] = true
     org.tomasino.clm.trackEvent(id, type, desc)
@@ -368,7 +374,7 @@ window.ns('org.tomasino.clm').modify({
       org.tomasino.clm._events[eventName] = []
     }
 
-    var index = org.tomasino.clm._events[eventName].push(listener) - 1
+    const index = org.tomasino.clm._events[eventName].push(listener) - 1
 
     // Provide handle back for removal of eventName
     return {
