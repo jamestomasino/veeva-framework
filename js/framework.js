@@ -73,7 +73,6 @@ window.ns('org.tomasino.clm').modify({
         org.tomasino.clm._accountID = obj.Account.ID
         org.tomasino.clm.publish(org.tomasino.clm.EVENT_CALLSTATUS, true)
       } else {
-        console.log('1')
         org.tomasino.clm.publish(org.tomasino.clm.EVENT_CALLSTATUS, false)
         // Retry each second until call established
         setTimeout(function () { org.tomasino.clm.inCall(true) }, 2000)
