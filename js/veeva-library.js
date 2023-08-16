@@ -2059,13 +2059,7 @@ com.veeva.clm = {
         } else if(com.veeva.clm.isVeevaMessagingEnabled()) {
             window.webkit.messageHandlers.veeva.postMessage({"message": request});
         } else {
-            // existing code in this block could be deleted, but to play safe, we keep
-	    // as is just in case some legacy applications still need them.
-            // we will eventually remove this code block.
-            request = request.replace(/^veeva:/, '');
-            request = encodeURIComponent(request);
-            request = "veeva:" + request;
-            document.location = request;
+            window.console.log('No Veeva API found')
         }
     },
 
