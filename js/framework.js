@@ -19,13 +19,13 @@ window.ns = window.ns || function (ns) {
 }
 
 window.ns('org.tomasino.clm').modify({
-  VERSION: '0.2.5',
+  VERSION: '0.2.6',
   DEBUG: true,
   _presentationStructure: null,
   _currentSlide: null,
   _events: {},
   _inVeeva: false,
-  _inCall: false,
+  _inCall: null,
   _accountID: '',
   _oneTimeEvents: {},
   _inVeevaTest: null,
@@ -64,18 +64,24 @@ window.ns('org.tomasino.clm').modify({
     }
 
     com.veeva.clm.getDataForCurrentObject('Account', 'ID', function (obj) {
-      // We're in Veeva, so stop the test
-      org.tomasino.clm._inVeeva = true
-      clearInterval(org.tomasino.clm._inVeevaTest)
+      // We're in Veeva, so stop the test. Do this only once
+      if (!org.tomasino.clm._inVeeva) {
+        org.tomasino.clm._inVeeva = true
+        clearInterval(org.tomasino.clm._inVeevaTest)
+      }
 
+      // Check if we got valid data back to determine if we're actually in a call
       if (obj.success === true) {
         org.tomasino.clm._inCall = true
         org.tomasino.clm._accountID = obj.Account.ID
         org.tomasino.clm.publish(org.tomasino.clm.EVENT_CALLSTATUS, true)
       } else {
-        org.tomasino.clm.publish(org.tomasino.clm.EVENT_CALLSTATUS, false)
-        // Retry each second until call established
-        setTimeout(function () { org.tomasino.clm.inCall(true) }, 2000)
+        if (org.tomasino.clm._inCall !== false) {
+          org.tomasino.clm._inCall = false
+          org.tomasino.clm.publish(org.tomasino.clm.EVENT_CALLSTATUS, false)
+        }
+        // Retry until call established
+        setTimeout(function () { org.tomasino.clm.inCall(true) }, 3000)
       }
     })
   },
