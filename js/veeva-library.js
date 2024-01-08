@@ -2288,7 +2288,10 @@ com.veeva.clm.initialize = function initializeEngage() {
     }
 
     function engageMessage(message) {
-        var data = JSON.parse(message.data);
+        var data = {}
+        if (message.data) {
+            data = JSON.parse(message.data);
+        }
 
         if(data.type && data.type === "events") {
             internalMessage = true;
