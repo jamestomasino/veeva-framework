@@ -19,7 +19,7 @@ window.ns = window.ns || function (ns) {
 }
 
 window.ns('org.tomasino.clm').modify({
-  VERSION: '0.2.6',
+  VERSION: '0.2.7',
   DEBUG: true,
   _presentationStructure: null,
   _currentSlide: null,
@@ -197,7 +197,13 @@ window.ns('org.tomasino.clm').modify({
 
   gotoSlide: function (id) {
     //document.body.innerHTML = ''
-    com.veeva.clm.gotoSlide(id)
+    if (org.tomasino.clm._inVeeva) {
+      com.veeva.clm.gotoSlide(id)
+    } else {
+      org.tomasino.clm.log('Not in Veeva: Navigate manually.')
+      const dirname = id.replace(/\.zip$/, '')
+      window.location = '../' + dirname + '/' + dirname + '.html'
+    }
   },
   /* Navigation structural definition
    *
