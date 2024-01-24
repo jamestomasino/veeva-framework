@@ -19,7 +19,7 @@ window.ns = window.ns || function (ns) {
 }
 
 window.ns('org.tomasino.clm').modify({
-  VERSION: '0.2.7',
+  VERSION: '0.2.8',
   DEBUG: true,
   _presentationStructure: null,
   _currentSlide: null,
@@ -89,35 +89,38 @@ window.ns('org.tomasino.clm').modify({
   /* Per-Account Localstorage store
   */
   store: function (key, obj) {
+    let p, a
     if (org.tomasino.clm._inCall) {
-      const p = org.tomasino.clm._presentationStructure.presentationID
-      const a = org.tomasino.clm._accountID
-      const token = p + '_' + key + '_' + a
-      return window.localStorage.setItem(token, JSON.stringify(obj))
+      p = org.tomasino.clm._presentationStructure.presentationID
+      a = org.tomasino.clm._accountID
     } else {
-      org.tomasino.clm.log('ERROR - Not in call')
+      p = org.tomasino.clm._presentationStructure.presentationID
+      a = 'localtesting'
     }
+    const token = p + '_' + key + '_' + a
+    return window.localStorage.setItem(token, JSON.stringify(obj))
   },
 
   /* Per-Account Localstorage get
   */
   get: function (key) {
+    let p, a
     if (org.tomasino.clm._inCall) {
-      const p = org.tomasino.clm._presentationStructure.presentationID
-      const a = org.tomasino.clm._accountID
-      const token = p + '_' + key + '_' + a
-      const value = window.localStorage.getItem(token)
-      let returnObj
-      try {
-        returnObj = JSON.parse(value)
-      } catch (_e) {
-        returnObj = null
-      }
-      return returnObj
+      p = org.tomasino.clm._presentationStructure.presentationID
+      a = org.tomasino.clm._accountID
     } else {
-      org.tomasino.clm.log('ERROR - Not in call')
-      return null
+      p = org.tomasino.clm._presentationStructure.presentationID
+      a = 'localtesting'
     }
+    const token = p + '_' + key + '_' + a
+    const value = window.localStorage.getItem(token)
+    let returnObj
+    try {
+      returnObj = JSON.parse(value)
+    } catch (_e) {
+      returnObj = null
+    }
+    return returnObj
   },
 
   /* Start data processing, routing, etc
